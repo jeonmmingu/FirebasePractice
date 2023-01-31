@@ -1,5 +1,6 @@
 import UIKit
 import FirebaseAuth
+import CoreLocation
 
 extension HomeScreenViewController {
     
@@ -40,6 +41,23 @@ extension HomeScreenViewController {
         }
     }
     
+    @objc func pinCurrentLocationButtonTapped() {
+        if la != nil || lo != nil {
+            let newPoiItem = createPin(itemName: "현재 위치", mapPoint: MTMapPoint(geoCoord: MTMapPointGeo(latitude: la, longitude: lo)), markerType: .redPin)
+            
+            // remove and add poiItem
+            mapView.removeAllPOIItems()
+            mapView.addPOIItems([newPoiItem])
+            
+            // move Map to current Location
+            mapView.setMapCenter(MTMapPoint(geoCoord: MTMapPointGeo(latitude: la, longitude: lo)), zoomLevel: 1, animated: true)
+            
+        } else {
+            getLocationUsagePermission()
+            print("현재 위치 마크를 사용할 수 없습니다.")
+        }
+    }
+    
     @objc func logoutButtonTouchDown() {
         logoutButton.backgroundColor = UIColor.systemIndigo
     }
@@ -56,4 +74,11 @@ extension HomeScreenViewController {
         deleteAccountButton.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
     }
     
+    @objc func pinCurrentLocationButtonTouchDown() {
+        pinCurrentLocationButton.backgroundColor = UIColor.systemIndigo
+    }
+
+    @objc func pinCurrentLocationButtonTouchUp() {
+        pinCurrentLocationButton.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
+    }
 }

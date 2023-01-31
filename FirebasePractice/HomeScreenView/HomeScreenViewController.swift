@@ -1,12 +1,17 @@
 import UIKit
 import FirebaseAuth
+import CoreLocation
 
 class HomeScreenViewController: UIViewController {
     
-    let textField = UITextField()
+    let pinCurrentLocationButton = UIButton()
     let logoutButton = UIButton()
     let deleteAccountButton = UIButton()
     let tabBar = UITabBar()
+    var mapView: MTMapView!
+    var locationManager: CLLocationManager!
+    var la: Double! // 현재 위치 경도
+    var lo: Double! // 현재 위치 위도
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,6 +20,8 @@ class HomeScreenViewController: UIViewController {
         setupTextField()
         setupLogoutButton()
         setupDeleteAccountButton()
+        setupLocationManager()
+        setupMapView()
         setupLayout()
     }
     
@@ -35,11 +42,15 @@ class HomeScreenViewController: UIViewController {
     }
     
     func setupTextField() {
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Enter text here"
-        textField.textAlignment = .center
-        textField.borderStyle = .roundedRect
-        view.addSubview(textField)
+        pinCurrentLocationButton.translatesAutoresizingMaskIntoConstraints = false
+        pinCurrentLocationButton.setTitle("Pin Current Location", for: .normal)
+        pinCurrentLocationButton.setTitleColor(.white, for: .normal)
+        pinCurrentLocationButton.layer.backgroundColor = CGColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
+        pinCurrentLocationButton.layer.cornerRadius = 15.0
+        pinCurrentLocationButton.addTarget(self, action: #selector(pinCurrentLocationButtonTapped), for: .touchUpInside)
+        pinCurrentLocationButton.addTarget(self, action: #selector(pinCurrentLocationButtonTouchDown), for: .touchDown)
+        pinCurrentLocationButton.addTarget(self, action: #selector(pinCurrentLocationButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        view.addSubview(pinCurrentLocationButton)
     }
     
     func setupLogoutButton() {
@@ -70,25 +81,30 @@ class HomeScreenViewController: UIViewController {
     func setupLayout() {
         view.backgroundColor = UIColor(red: 90/255, green: 200/255, blue: 250/255, alpha: 1)
         NSLayoutConstraint.activate([
-            textField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            textField.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            textField.widthAnchor.constraint(equalToConstant: 200),
-            textField.heightAnchor.constraint(equalToConstant: 40),
+            tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            tabBar.heightAnchor.constraint(equalToConstant: 80),
             
-            logoutButton.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 40),
-            logoutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            logoutButton.widthAnchor.constraint(equalToConstant: 130),
-            logoutButton.heightAnchor.constraint(equalToConstant: 33),
-            
-            deleteAccountButton.topAnchor.constraint(equalTo: logoutButton.bottomAnchor, constant: 20),
+            deleteAccountButton.bottomAnchor.constraint(equalTo: tabBar.topAnchor, constant: -30),
             deleteAccountButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             deleteAccountButton.widthAnchor.constraint(equalToConstant: 130),
             deleteAccountButton.heightAnchor.constraint(equalToConstant: 33),
             
-            tabBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            tabBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tabBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tabBar.heightAnchor.constraint(equalToConstant: 50)
+            logoutButton.bottomAnchor.constraint(equalTo: deleteAccountButton.topAnchor, constant: -30),
+            logoutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            logoutButton.widthAnchor.constraint(equalToConstant: 130),
+            logoutButton.heightAnchor.constraint(equalToConstant: 33),
+            
+            pinCurrentLocationButton.bottomAnchor.constraint(equalTo: logoutButton.topAnchor, constant: -30),
+            pinCurrentLocationButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pinCurrentLocationButton.widthAnchor.constraint(equalToConstant: 200),
+            pinCurrentLocationButton.heightAnchor.constraint(equalToConstant: 40),
+            
+            mapView.bottomAnchor.constraint(equalTo: pinCurrentLocationButton.topAnchor, constant: -30),
+            mapView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30),
+            mapView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 30),
+            mapView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -30)
         ])
     }
 }

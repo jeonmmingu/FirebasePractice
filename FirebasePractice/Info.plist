@@ -12,6 +12,14 @@
 				<string>com.googleusercontent.apps.103875918976-hqds2c49153qkf0css8vkjf5u6ivnnfd</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>kakaomap://open?page=placeSearch</string>
+			</array>
+		</dict>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

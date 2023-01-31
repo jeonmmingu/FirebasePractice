@@ -3,35 +3,9 @@ import FirebaseAuth
 
 class HomeScreenViewController: UIViewController {
     
-    let textField: UITextField = {
-        let tf = UITextField()
-        tf.translatesAutoresizingMaskIntoConstraints = false
-        tf.placeholder = "Enter text here"
-        tf.textAlignment = .center
-        tf.borderStyle = .roundedRect
-        return tf
-    }()
-    
-    let logoutButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Logout", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.layer.backgroundColor = CGColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
-        button.layer.cornerRadius = 15.0
-        return button
-    }()
-    
-    let deleteAccountButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Delete Account", for: .normal)
-        button.setTitleColor(.white, for: .normal)
-        button.layer.backgroundColor = CGColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
-        button.layer.cornerRadius = 15.0
-        return button
-    }()
-    
+    let textField = UITextField()
+    let logoutButton = UIButton()
+    let deleteAccountButton = UIButton()
     let tabBar = UITabBar()
     
     override func viewDidLoad() {
@@ -57,54 +31,36 @@ class HomeScreenViewController: UIViewController {
     }
     
     func setupTextField() {
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Enter text here"
+        textField.textAlignment = .center
+        textField.borderStyle = .roundedRect
         view.addSubview(textField)
     }
     
     func setupLogoutButton() {
+        logoutButton.translatesAutoresizingMaskIntoConstraints = false
+        logoutButton.setTitle("Logout", for: .normal)
+        logoutButton.setTitleColor(.white, for: .normal)
+        logoutButton.layer.backgroundColor = CGColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
+        logoutButton.layer.cornerRadius = 15.0
         logoutButton.addTarget(self, action: #selector(logoutButtonTapped), for: .touchUpInside)
+        logoutButton.addTarget(self, action: #selector(logoutButtonTouchDown), for: .touchDown)
+        logoutButton.addTarget(self, action: #selector(logoutButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
         view.addSubview(logoutButton)
     }
     
-    @objc func logoutButtonTapped() {
-        do {
-            try Auth.auth().signOut()
-            if self.navigationController?.viewControllers.count == 1 {
-                let vc = LoginViewController()
-                let navigationController = UINavigationController()
-                navigationController.pushViewController(vc, animated: true)
-            } else {
-                self.navigationController?.popToRootViewController(animated: false)
-            }
-            
-        } catch let signOutError as NSError {
-            print ("Error signing out: %@", signOutError)
-        }
-    }
     
     func setupDeleteAccountButton() {
+        deleteAccountButton.translatesAutoresizingMaskIntoConstraints = false
+        deleteAccountButton.setTitle("Delete Account", for: .normal)
+        deleteAccountButton.setTitleColor(.white, for: .normal)
+        deleteAccountButton.layer.backgroundColor = CGColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
+        deleteAccountButton.layer.cornerRadius = 15.0
         deleteAccountButton.addTarget(self, action: #selector(deleteAccountButtonTapped), for: .touchUpInside)
+        deleteAccountButton.addTarget(self, action: #selector(deleteAccountButtonTouchDown), for: .touchDown)
+        deleteAccountButton.addTarget(self, action: #selector(deleteAccountButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
         view.addSubview(deleteAccountButton)
-    }
-    
-    @objc func deleteAccountButtonTapped() {
-        let user = Auth.auth().currentUser
-        user?.delete { error in
-            if let error = error {
-                // An error occurred while deleting the user account
-                print("Error deleting user account: \(error)")
-            } else {
-                // Account deleted successfully
-                print("User account deleted successfully")
-                if self.navigationController?.viewControllers.count == 1 {
-                    let vc = LoginViewController()
-                    let navigationController = UINavigationController()
-                    navigationController.pushViewController(vc, animated: true)
-                    
-                } else {
-                    self.navigationController?.popViewController(animated: true)
-                }
-            }
-        }
     }
     
     func setupLayout() {

@@ -21,6 +21,10 @@ class SignUpViewController: UIViewController {
         }
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       view.endEditing(true)
+    }
+    
     func setupEmailTextField(){
         emailTextField.borderStyle = .roundedRect
         emailTextField.placeholder = "Email"

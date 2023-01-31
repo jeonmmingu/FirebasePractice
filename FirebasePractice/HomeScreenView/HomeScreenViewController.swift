@@ -18,6 +18,10 @@ class HomeScreenViewController: UIViewController {
         setupLayout()
     }
     
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       view.endEditing(true)
+    }
+    
     func setupTabBar() {
         let firstTab = UITabBarItem(title: "First", image: nil, tag: 0)
         let secondTab = UITabBarItem(title: "Second", image: nil, tag: 1)

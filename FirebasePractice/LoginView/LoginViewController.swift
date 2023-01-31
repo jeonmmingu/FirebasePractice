@@ -1,14 +1,21 @@
 import UIKit
 import FirebaseCore
 import FirebaseAuth
+import GoogleSignIn
+
 
 class LoginViewController: UIViewController {
     
     let emailTextField = UITextField()
     let passwordTextField = UITextField()
     let loginButton = UIButton()
+    
     let signUpButton = UIButton()
-    let GoogleSignUpButton = UIButton()
+    let GoogleSignUpButton = GIDSignInButton()
+    let AppleSignUpButton = UIButton()
+    let GuestSignUpButton = UIButton()
+    
+    var currentNonce: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,12 +25,15 @@ class LoginViewController: UIViewController {
         setupLoginButton()
         setupSignUpButton()
         setupGoogleSignUpButton()
+        setupAppleSignUpButton()
+        setupGuestSignUpButton()
         setupLayout()
         
         if Auth.auth().currentUser != nil {
             let vc = HomeScreenViewController()
             self.navigationController?.pushViewController(vc, animated: true)
         }
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -33,6 +43,10 @@ class LoginViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         emailTextField.text = ""
         passwordTextField.text = ""
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       view.endEditing(true)
     }
     
     func setupEmailTextField() {
@@ -62,18 +76,6 @@ class LoginViewController: UIViewController {
         view.addSubview(loginButton)
     }
     
-    func setupGoogleSignUpButton() {
-        GoogleSignUpButton.layer.cornerRadius = 15.0
-        GoogleSignUpButton.setTitle("Login", for: .normal)
-        GoogleSignUpButton.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
-        GoogleSignUpButton.setTitleColor(.white, for: .normal)
-        GoogleSignUpButton.translatesAutoresizingMaskIntoConstraints = false
-        GoogleSignUpButton.addTarget(self, action: #selector(googleSignUpButtonTapped), for: .touchUpInside)
-        GoogleSignUpButton.addTarget(self, action: #selector(googleSignUpButtonTouchDown), for: .touchDown)
-        GoogleSignUpButton.addTarget(self, action: #selector(googleSignUpButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        view.addSubview(GoogleSignUpButton)
-    }
-    
     func setupSignUpButton() {
         signUpButton.layer.cornerRadius = 15.0
         signUpButton.setTitle("Sign Up", for: .normal)
@@ -84,6 +86,40 @@ class LoginViewController: UIViewController {
         signUpButton.addTarget(self, action: #selector(signUpButtonTouchDown), for: .touchDown)
         signUpButton.addTarget(self, action: #selector(signUpButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
         view.addSubview(signUpButton)
+    }
+    
+    func setupGoogleSignUpButton() {
+        GoogleSignUpButton.colorScheme = .light
+        GoogleSignUpButton.style = .wide
+        GoogleSignUpButton.translatesAutoresizingMaskIntoConstraints = false
+        GoogleSignUpButton.addTarget(self, action: #selector(googleSignUpButtonTapped), for: .touchUpInside)
+        GoogleSignUpButton.addTarget(self, action: #selector(googleSignUpButtonTouchDown), for: .touchDown)
+        GoogleSignUpButton.addTarget(self, action: #selector(googleSignUpButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        view.addSubview(GoogleSignUpButton)
+    }
+    
+    func setupAppleSignUpButton() {
+        AppleSignUpButton.layer.cornerRadius = 15.0
+        AppleSignUpButton.setTitle("Sign in with Apple", for: .normal)
+        AppleSignUpButton.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
+        AppleSignUpButton.setTitleColor(.white, for: .normal)
+        AppleSignUpButton.translatesAutoresizingMaskIntoConstraints = false
+        AppleSignUpButton.addTarget(self, action: #selector(appleSignUpButtonTapped), for: .touchUpInside)
+        AppleSignUpButton.addTarget(self, action: #selector(appleSignUpButtonTouchDown), for: .touchDown)
+        AppleSignUpButton.addTarget(self, action: #selector(appleSignUpButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        view.addSubview(AppleSignUpButton)
+    }
+    
+    func setupGuestSignUpButton() {
+        GuestSignUpButton.layer.cornerRadius = 15.0
+        GuestSignUpButton.setTitle("Sign in with Guest", for: .normal)
+        GuestSignUpButton.backgroundColor = UIColor(red: 0/255, green: 0/255, blue: 128/255, alpha: 1)
+        GuestSignUpButton.setTitleColor(.white, for: .normal)
+        GuestSignUpButton.translatesAutoresizingMaskIntoConstraints = false
+        GuestSignUpButton.addTarget(self, action: #selector(guestSignUpButtonTapped), for: .touchUpInside)
+        GuestSignUpButton.addTarget(self, action: #selector(guestSignUpButtonTouchDown), for: .touchDown)
+        GuestSignUpButton.addTarget(self, action: #selector(guestSignUpButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        view.addSubview(GuestSignUpButton)
     }
     
     func setupLayout() {
@@ -107,10 +143,18 @@ class LoginViewController: UIViewController {
             signUpButton.widthAnchor.constraint(equalToConstant: 130),
             signUpButton.heightAnchor.constraint(equalToConstant: 33),
             
-            GoogleSignUpButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 20),
+            GoogleSignUpButton.topAnchor.constraint(equalTo: signUpButton.bottomAnchor, constant: 40),
             GoogleSignUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            GoogleSignUpButton.widthAnchor.constraint(equalToConstant: 130),
-            GoogleSignUpButton.heightAnchor.constraint(equalToConstant: 33)
+            
+            AppleSignUpButton.topAnchor.constraint(equalTo: GoogleSignUpButton.bottomAnchor, constant: 20),
+            AppleSignUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            AppleSignUpButton.widthAnchor.constraint(equalToConstant: 170),
+            AppleSignUpButton.heightAnchor.constraint(equalToConstant: 33),
+            
+            GuestSignUpButton.topAnchor.constraint(equalTo: AppleSignUpButton.bottomAnchor, constant: 20),
+            GuestSignUpButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            GuestSignUpButton.widthAnchor.constraint(equalToConstant: 170),
+            GuestSignUpButton.heightAnchor.constraint(equalToConstant: 33)
         ])
     }
 }
